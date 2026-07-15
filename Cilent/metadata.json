@@ -1,0 +1,6 @@
+{
+  "name": "ArguBot",
+  "description": "An AI debate chatbot where you test your opinions against a ruthless, quick-witted AI opponent.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
