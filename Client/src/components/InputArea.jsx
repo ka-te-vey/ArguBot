@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Paperclip, Mic, Image, ArrowUp } from "lucide-react";
+import { useTheme } from "./Theme";
 
 export default function InputArea({
   value,
@@ -8,9 +9,9 @@ export default function InputArea({
   onSubmit,
   isThinking,
   placeholder,
-  disabled,
-  theme
+  disabled
 }) {
+  const { theme } = useTheme();
   const isDark = theme === "dark";
   const textareaRef = useRef(null);
 

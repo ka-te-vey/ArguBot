@@ -1,17 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Award, RotateCcw, AlertCircle, Clipboard, Check, Lightbulb, MessageSquare, TrendingUp } from "lucide-react";
-import { ScoreResponse } from "../types";
-
-interface ScoreScreenProps {
-  opinion: string;
-  score: ScoreResponse | null;
-  isLoading: boolean;
-  onReset: () => void;
-  onDebateBack?: () => void;
-  totalRounds?: number;
-  theme?: "dark" | "light";
-}
+import { Award, RotateCcw, AlertCircle, Clipboard, Check, MessageSquare } from "lucide-react";
+import { ScoreGauge, FeedbackDetails } from "../components/ScoreScreen";
+import { useTheme } from "../components/Theme";
 
 const LOADING_PHASES = [
   "Evaluating logical coherence...",
@@ -21,42 +12,39 @@ const LOADING_PHASES = [
   "Generating final debate scores..."
 ];
 
-export default function ScoreScreen({
-  opinion,
-  score,
-  isLoading,
-  onReset,
-  onDebateBack,
-  totalRounds,
-  theme = "dark"
-}: ScoreScreenProps) {
+export default function ReviewAndVerdict({
+  activeChat,
+  isCalculatingScore,
+  handleNewChat,
+  handleDebateBack
+}) {
   const [loadingPhase, setLoadingPhase] = useState(0);
   const [copied, setCopied] = useState(false);
-
+  const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  // Cycle through loading phrases
+  // Cycle through loading phases
   useEffect(() => {
-    if (!isLoading) return;
+    if (!isCalculatingScore) return;
     const interval = setInterval(() => {
       setLoadingPhase((prev) => (prev + 1) % LOADING_PHASES.length);
     }, 2200);
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isCalculatingScore]);
 
   const handleCopyVerdict = () => {
-    if (score) {
-      const shareText = `⚔️ ArguBot Debate Verdict ⚔️\nScore: ${score.score || "N/A"}/10\nAdvice: ${score.advice}\nImprovement: ${score.improvement}\n\nCan you argue better? Test your wits on ArguBot!`;
+    if (activeChat.score) {
+      const shareText = `⚔️ ArguBot Debate Verdict ⚔️\nScore: ${activeChat.score.score || "N/A"}/10\nAdvice: ${activeChat.score.advice}\nImprovement: ${activeChat.score.improvement}\n\nCan you argue better? Test your wits on ArguBot!`;
       navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  if (isLoading) {
+  if (isCalculatingScore) {
     return (
       <div className="w-full max-w-md mx-auto px-6 py-16 flex flex-col items-center justify-center min-h-[50vh] text-center">
-        {/* Animated sparkling gradient loading dots/circle */}
+        {/* Animated loader */}
         <div className="relative mb-8 flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
@@ -99,7 +87,7 @@ export default function ScoreScreen({
     );
   }
 
-  if (!score) {
+  if (!activeChat.score) {
     return (
       <div className={`w-full max-w-md mx-auto px-6 py-16 text-center border rounded-2xl shadow-xl transition-all ${
         isDark ? "bg-[#1E1E1F] border-zinc-800 text-white" : "bg-white border-zinc-200 text-zinc-900"
@@ -112,7 +100,7 @@ export default function ScoreScreen({
         <button
           id="failed-reset-btn"
           type="button"
-          onClick={onReset}
+          onClick={handleNewChat}
           className="mt-6 w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-md hover:opacity-95"
         >
           Return to Arena Setup
@@ -145,53 +133,11 @@ export default function ScoreScreen({
         }`}
       >
         <div className="flex flex-col items-center">
-          {/* Rating Score out of 10 inside Gemini style glowing circle */}
-          <div className="relative flex flex-col items-center justify-center mb-8 bg-zinc-50 dark:bg-[#131314] h-32 w-32 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-inner">
-            {/* Signature outer gradient halo */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse blur-sm" />
-            <span className={`font-mono text-[9px] uppercase tracking-wider relative z-10 ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
-              SCORE
-            </span>
-            <div className="flex items-baseline gap-0.5 relative z-10">
-              <span className={`text-5xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
-                {score.score || 0}
-              </span>
-              <span className={`font-mono text-xs ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
-                /10
-              </span>
-            </div>
-          </div>
-
-          {/* Feedback Body */}
-          <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-6 w-full text-left space-y-6">
-            <div>
-              <span className="text-[10px] font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest block mb-2 flex items-center gap-1.5 font-bold">
-                <Lightbulb className="w-3.5 h-3.5 text-blue-500" />
-                Constructive Advice
-              </span>
-              <p className={`text-[15px] leading-relaxed font-normal ${
-                isDark ? "text-zinc-200" : "text-zinc-800"
-              }`}>
-                {score.advice}
-              </p>
-            </div>
-
-            {score.improvement && (
-              <div className={`border rounded-2xl p-4 md:p-5 transition-all ${
-                isDark ? "bg-[#282A2D] border-zinc-700/55" : "bg-[#F0F4F9] border-blue-100"
-              }`}>
-                <span className="text-[10px] font-mono text-pink-500 dark:text-pink-400 uppercase tracking-widest block mb-2.5 flex items-center gap-1.5 font-bold">
-                  <TrendingUp className="w-3.5 h-3.5 text-pink-500" />
-                  What to Improve On
-                </span>
-                <p className={`text-[14px] leading-relaxed ${
-                  isDark ? "text-zinc-300" : "text-zinc-700"
-                }`}>
-                  {score.improvement}
-                </p>
-              </div>
-            )}
-          </div>
+          <ScoreGauge score={activeChat.score.score} />
+          <FeedbackDetails
+            advice={activeChat.score.advice}
+            improvement={activeChat.score.improvement}
+          />
         </div>
       </motion.div>
 
@@ -220,11 +166,11 @@ export default function ScoreScreen({
           )}
         </button>
 
-        {totalRounds === 3 && onDebateBack && (
+        {activeChat.totalRounds === 3 && handleDebateBack && (
           <button
             id="debate-back-btn"
             type="button"
-            onClick={onDebateBack}
+            onClick={handleDebateBack}
             className="flex-1 py-3 px-5 bg-[#EF4444]/10 hover:bg-[#EF4444]/20 border border-[#EF4444]/30 text-[#EF4444] rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <MessageSquare className="w-4 h-4" />
@@ -235,7 +181,7 @@ export default function ScoreScreen({
         <button
           id="debate-again-btn"
           type="button"
-          onClick={onReset}
+          onClick={handleNewChat}
           className="flex-1 py-3 px-5 text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:opacity-95 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-500/10"
         >
           <RotateCcw className="w-4 h-4 animate-spin-slow" />

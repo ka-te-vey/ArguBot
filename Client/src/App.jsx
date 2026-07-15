@@ -1,18 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, RefreshCw, PanelLeft } from "lucide-react";
-import Sidebar from "./components/Sidebar";
-import EmptyState from "./components/EmptyState";
-import ChatFeed from "./components/ChatFeed";
-import ScoreScreen from "./components/ScoreScreen";
+import Sidebar from "./pages/Sidebar";
 import InputArea from "./components/InputArea";
+import Dashboard from "./pages/Dashboard";
+import ChatBot from "./pages/ChatBot";
+import ReviewAndVerdict from "./pages/ReviewAndVerdict";
+import { useTheme } from "./components/Theme";
 
 export default function App() {
-  // Theme state
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("argubot_theme");
-    return saved === "light" || saved === "dark" ? saved : "dark";
-  });
+  const { theme } = useTheme();
 
   // Sidebar collapsible state
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
@@ -39,15 +36,7 @@ export default function App() {
   const [isCalculatingScore, setIsCalculatingScore] = useState(false);
   const [errorBanner, setErrorBanner] = useState(null);
 
-  // Sync theme changes to Document class List
-  useEffect(() => {
-    localStorage.setItem("argubot_theme", theme);
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme]);
+
 
   // Sync chats to LocalStorage
   useEffect(() => {
@@ -65,10 +54,7 @@ export default function App() {
     );
   };
 
-  // Switch to dark/light theme
-  const handleToggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+
 
   // Erase all chat databases
   const handleClearAllHistory = () => {
@@ -286,8 +272,6 @@ export default function App() {
         onSelectChat={handleSelectChat}
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
-        theme={theme}
-        onToggleTheme={handleToggleTheme}
         onClearAll={handleClearAllHistory}
       />
 
@@ -375,11 +359,10 @@ export default function App() {
                 exit={{ opacity: 0, y: -15 }}
                 className="flex-1 flex flex-col justify-between overflow-y-auto w-full"
               >
-                <EmptyState
+                <Dashboard
                   onSelectPrompt={(pText) => setInputText(pText)}
                   rounds={rounds}
                   onSetRounds={setRounds}
-                  theme={theme}
                 />
               </motion.div>
             ) : activeChat.screen === "debate" ? (
@@ -391,19 +374,10 @@ export default function App() {
                 exit={{ opacity: 0 }}
                 className="flex-1 flex flex-col overflow-hidden w-full"
               >
-                {/* Active Opinion Banner */}
-                <div className={`px-4 md:px-8 py-3 border-b text-xs md:text-sm select-none transition-colors shrink-0 text-center font-medium ${
-                  theme === "dark" ? "bg-zinc-900/30 border-zinc-850 text-zinc-400" : "bg-zinc-50 border-zinc-100 text-zinc-500"
-                }`}>
-                  Debating: <span className="italic">"{activeChat.opinion}"</span>
-                </div>
-
-                <ChatFeed
-                  history={activeChat.history}
+                <ChatBot
+                  activeChat={activeChat}
                   isThinking={isThinking}
-                  totalRounds={activeChat.totalRounds}
-                  onEndDebate={handleTriggerScoring}
-                  theme={theme}
+                  handleTriggerScoring={handleTriggerScoring}
                 />
               </motion.div>
             ) : (
@@ -415,14 +389,11 @@ export default function App() {
                 exit={{ opacity: 0 }}
                 className="flex-1 flex flex-col overflow-y-auto w-full justify-start py-8"
               >
-                <ScoreScreen
-                  opinion={activeChat.opinion}
-                  score={activeChat.score}
-                  isLoading={isCalculatingScore}
-                  onReset={handleNewChat}
-                  onDebateBack={handleDebateBack}
-                  totalRounds={activeChat.totalRounds}
-                  theme={theme}
+                <ReviewAndVerdict
+                  activeChat={activeChat}
+                  isCalculatingScore={isCalculatingScore}
+                  handleNewChat={handleNewChat}
+                  handleDebateBack={handleDebateBack}
                 />
               </motion.div>
             )}
@@ -444,7 +415,6 @@ export default function App() {
             isThinking={isThinking}
             placeholder={getPlaceholderText()}
             disabled={isLastRoundAndWaiting || isThinking}
-            theme={theme}
           />
         )}
       </div>

@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { MessageSquare, Plus, Trash2, Sun, Moon, Settings, PanelLeftClose, PanelLeft, Sparkles } from "lucide-react";
+import { useTheme } from "../components/Theme";
 
 export default function Sidebar({
   isOpen,
@@ -9,10 +10,9 @@ export default function Sidebar({
   onSelectChat,
   onNewChat,
   onDeleteChat,
-  theme,
-  onToggleTheme,
   onClearAll
 }) {
+  const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
   return (
@@ -137,7 +137,7 @@ export default function Sidebar({
         <div className={`p-3 border-t space-y-1 shrink-0 ${isDark ? "border-zinc-800" : "border-zinc-200/80"}`}>
           {/* Light/Dark Mode Toggle */}
           <button
-            onClick={onToggleTheme}
+            onClick={toggleTheme}
             className={`flex items-center gap-3 w-full rounded-full transition-all cursor-pointer ${
               isOpen ? "px-3 py-2.5 text-xs font-semibold" : "p-3.5 justify-center"
             } ${

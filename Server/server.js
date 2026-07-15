@@ -1,20 +1,19 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
-import { createServer as createViteServer } from "vite";
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Helper to call Groq Chat Completions API
-async function callGroqChatCompletion(messages: any[], jsonMode: boolean = false) {
+async function callGroqChatCompletion(messages, jsonMode = false) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY environment variable is not configured on the server.");
   }
 
   // We use llama-3.3-70b-versatile as our state-of-the-art Groq model
-  const payload: any = {
+  const payload = {
     model: "llama-3.3-70b-versatile",
     messages: messages,
     temperature: 0.7,
@@ -68,7 +67,7 @@ The debate topic started with the user's opinion: "${opinion}". You must hold th
       // Construct messages for Groq Chat API
       const messages = [
         { role: "system", content: systemPrompt },
-        ...history.map((msg: any) => ({
+        ...history.map((msg) => ({
           role: msg.role === "user" ? "user" : "assistant",
           content: msg.text
         }))
@@ -76,7 +75,7 @@ The debate topic started with the user's opinion: "${opinion}". You must hold th
 
       const reply = await callGroqChatCompletion(messages, false);
       res.json({ reply: reply.trim() });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error in /api/debate:", error);
       res.status(500).json({ error: error.message || "An error occurred while contacting the debate model." });
     }
@@ -98,7 +97,7 @@ The debate topic started with the user's opinion: "${opinion}". You must hold th
 
       // Prepare debate transcript for evaluation
       const transcript = history
-        .map((msg: any) => `${msg.role === "user" ? "User" : "Opponent"}: ${msg.text}`)
+        .map((msg) => `${msg.role === "user" ? "User" : "Opponent"}: ${msg.text}`)
         .join("\n\n");
 
       const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript:\n${transcript}\n\nPlease evaluate the User's arguments, rhetorical skill, and consistency based on the transcript and output the strict JSON.`;
@@ -124,29 +123,21 @@ The debate topic started with the user's opinion: "${opinion}". You must hold th
 
       const scoreJson = JSON.parse(cleanedResponse);
       res.json(scoreJson);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error in /api/score:", error);
       res.status(500).json({ error: error.message || "An error occurred while evaluating your debate performance." });
     }
   });
 
   // Serve Frontend
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+  const distPath = path.join(process.cwd(), "../Client/dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT} in ${process.env.NODE_ENV || "development"} mode`);
+  app.listen(PORT, "localhost", () => {
+    console.log(`Server running on http://localhost:${PORT} in ${process.env.NODE_ENV || "development"} mode`);
   });
 }
 
