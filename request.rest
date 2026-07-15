@@ -1,0 +1,22 @@
+GET http://localhost:3000/getAllUser
+
+
+###
+
+
+
+POST http://localhost3000/createUser
+Content-Type: application/json
+
+{
+    "name": "",
+    "email": "",
+    "password": "",
+}
+
+
+
+###
+
+
+
