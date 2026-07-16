@@ -1,73 +1,81 @@
-const express = require('express');
-
-exports.getUser = async (req, res) => {
-    try {
-        const getUser = await findAll();
-
-        return res.status(201).json({ message: "User existed!" })
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
+const { signinSchema, signupSchema } = require('../middleware/validation');
+const jwt = require('jsonwebtoken');
+const { User } = require('../model/user');
+const { doHashValidation, doHash } = require('../utils/hashing');
 
 
-exports.createUser = async (req, res) => {
-    const { name, email, password } = req.body;
+exports.signin = async(req, res) => {
+    const { email, password } = req.body;
 
     try {
-        const newUser = await create({
-            name, 
-            email,
-            password
-        });
-
-        res.status(201).json({ message: "Created User Successfully!" });
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
-
-
-exports.updateUser = async (req, res) => {
-    const { id } = req.params;
-    const { name, email, password } = req.body;
-
-    try {
-        const updateUser = await userUpdate.findById( id );
-        
-        if(!existingUser) {
-            return res.status(201).json({ message: "User does not exist!" });
+        const { error } = signinSchema.validate({ email, password });
+        if(error){
+            return res.status(400).json({ success:false, message: error.message })
         }
 
-        const existingUser = await updateUser({
+        const existingUser = await User.findOne({ email }).select('+password')
+        if(!existingUser){
+            return res.status(401).json({ success:false, message: 'User already existed!' })
+        }
+
+        const isPasswordCorrect = await doHashValidation(password, existingUser.password);
+        if(!isPasswordCorrect){
+            return res.status(401).json({ success:false, message: 'Invalid credentials.' })
+        }
+
+        const token = jwt.sign({
+            userId: existingUser._id,
+            email: existingUser.email,
+            verified: existingUser.verified
+        }, process.env.TOKEN_SECRET,
+            {
+                expiresIn: '1h'
+            }
+        );
+
+        res.cookie('Authorization', 'Bearer ' + token, {
+            expires: new Date(Date.now() + 8 + 360000),
+            httpOnly: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production'
+        }) .json ({
+            success: true,
+            token,
+            message: 'Logged in successfully!'
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success:false, message: error.message });
+    }
+};
+
+
+exports.signup = async(req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        const { error } = signupSchema.validate({ name, email, password });
+        if(error) {
+            return res.status(400).json({ success:false, message: 'User already exists!' })
+        }
+
+        const hashedPassword = await doHash(password, 10);
+
+        const newUser = new User({
             name,
             email,
-            password
+            password: hashedPassword
         });
 
-        return res.status(201).json({ message: "Updated Successfully!"  })
-        
+        await newUser.save();
+
+        return res.status(201).json({ success:true, message: 'User registered successfully!' });
+
     } catch (error) {
-        return res.status(500).json({ message: error.message});
+        return res.status(500).json({ success:false, message: error.message });
     }
 };
 
 
-exports.deleteUser = async (req, res) => {
-    const { id } = req.body;
-    try {
-        const deleteUser = await findById( id );
-
-        if(!existingUser){
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        await deleteUser.destroy()
-        return res.status(201).json({ message: "Delete User successfully!" });
-
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
+exports.signout = async(req, res) => {
+    res.clearCookie('Authorization').status(200).json({ success:true, message: 'Logged out successfully!' })
 };

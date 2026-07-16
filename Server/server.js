@@ -1,144 +1,159 @@
-import express from "express";
-import path from "path";
-import dotenv from "dotenv";
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const path = require('path');
 
-// Load environment variables
-dotenv.config({ quiet: true });
 
-// Helper to call Groq Chat Completions API
-async function callGroqChatCompletion(messages, jsonMode = false) {
+const app = express();
+
+
+const authRouter = require('../Server/route/authRoute');
+const { clear } = require('console');
+
+
+
+app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+app.use(helmet());
+app.use(express.urlencoded({ extended: true }));
+
+
+async function callGroqChatCompletion(message, jsonMode = false) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    throw new Error("GROQ_API_KEY environment variable is not configured on the server.");
+    throw new Error('GROQ_API_KEY environment variable is not configured.')
   }
 
-  // We use llama-3.3-70b-versatile as our state-of-the-art Groq model
   const payload = {
-    model: "llama-3.3-70b-versatile",
-    messages: messages,
-    temperature: 0.7,
-  };
+    model: 'llama-3.3-70b-versatile',
+    message: message,
+  }
 
   if (jsonMode) {
-    payload.response_format = { type: "json_object" };
+    payload.response_format = { type: 'json_object' };
   }
 
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify(payload)
-  });
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', 
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Groq API returned an error (${response.status}): ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Groq API returned an error (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || "";
+};
+
+
+app.use('/api/auth', authRouter);
+app.post('/api/debate', async (req, res) => {
+  try {
+    const { opinion, history } = req.body;
+
+    if (!opinion) {
+      return res.status(400).json({ error: 'Missing original opinion.' })
+    }
+
+    if (!Array.isArray(history)) {
+      return res.status(400).json({ error: 'Histrory must be an array of message.' })
+    }
+
+    const systemPrompt = `You're OPPONENT, a live debate sparring partner.
+    Always argue the OPPOSITE side of whatever the user jsut said no matter what it is.
+    Keep every reply to 2-3 sentences max. 
+    Topix: "${opinion}".`;
+
+    const message = [
+      { role: 'System', content: systemPrompt },
+      ...history.map((msg) => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }))
+    ];
+
+    const reply = await callGroqChatCompletion(message, false);
+    res.json({ reply: reply.trim() });
+
+  } catch (error) {
+    console.error('Error in /api/debate: ', error);
+    res.status(500).json({ error: error.message || 'An error occured while contacting the debate model.'})
   }
+});
 
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
-}
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+app.post('api/score', async (req, res) => {
+  try {
+    const { opinion, history } = req.body;
 
-  app.use(express.json());
-
-  // API Route: Debate Counter-argument
-  app.post("/api/debate", async (req, res) => {
-    try {
-      const { opinion, history } = req.body;
-
-      if (!opinion) {
-        return res.status(400).json({ error: "Missing original opinion." });
-      }
-      if (!Array.isArray(history)) {
-        return res.status(400).json({ error: "History must be an array of messages." });
-      }
-
-      // Format the system prompt for the opponent
-      const systemPrompt = `You are OPPONENT, a live debate sparring partner. Always argue the OPPOSITE side of whatever the user just said, no matter what it is. Never break character or say you're an AI. Directly respond to the user's most recent point before advancing your own argument. Keep every reply to 2-3 sentences max — punchy, confident, conversational, no bullet points. Use real rhetorical moves: analogies, reframing, pointed questions. Stay respectful of the person, ruthless only on the argument.
-
-The debate topic started with the user's opinion: "${opinion}". You must hold the opposite stance and refute their arguments.`;
-
-      // Construct messages for Groq Chat API
-      const messages = [
-        { role: "system", content: systemPrompt },
-        ...history.map((msg) => ({
-          role: msg.role === "user" ? "user" : "assistant",
-          content: msg.text
-        }))
-      ];
-
-      const reply = await callGroqChatCompletion(messages, false);
-      res.json({ reply: reply.trim() });
-    } catch (error) {
-      console.error("Error in /api/debate:", error);
-      res.status(500).json({ error: error.message || "An error occurred while contacting the debate model." });
+    if (!opinion) {
+      return res.status(400).json({ error: 'Missing original opinion.'})
     }
-  });
 
-  // API Route: Debate Judging and Score
-  app.post("/api/score", async (req, res) => {
-    try {
-      const { opinion, history } = req.body;
-
-      if (!opinion) {
-        return res.status(400).json({ error: "Missing original opinion." });
-      }
-      if (!Array.isArray(history)) {
-        return res.status(400).json({ error: "History must be an array of messages." });
-      }
-
-      const systemPrompt = `You are JUDGE, switching from opponent to referee. Evaluate ONLY the user's arguments in the transcript. Respond with STRICT JSON only, no markdown fences: { score: number, advice: string, improvement: string }. The score must be a number out of 10 (e.g., 8.5 or 9.0) representing their performance quality. The advice should be 2-3 sentences of constructive rhetorical advice. The improvement should be 1-2 sentences explaining precisely what they should focus on improving.`;
-
-      // Prepare debate transcript for evaluation
-      const transcript = history
-        .map((msg) => `${msg.role === "user" ? "User" : "Opponent"}: ${msg.text}`)
-        .join("\n\n");
-
-      const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript:\n${transcript}\n\nPlease evaluate the User's arguments, rhetorical skill, and consistency based on the transcript and output the strict JSON.`;
-
-      const messages = [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage }
-      ];
-
-      const gptResponse = await callGroqChatCompletion(messages, true);
-
-      // Clean markdown fences from response if present
-      let cleanedResponse = gptResponse.trim();
-      if (cleanedResponse.startsWith("```json")) {
-        cleanedResponse = cleanedResponse.substring(7);
-      } else if (cleanedResponse.startsWith("```")) {
-        cleanedResponse = cleanedResponse.substring(3);
-      }
-      if (cleanedResponse.endsWith("```")) {
-        cleanedResponse = cleanedResponse.substring(0, cleanedResponse.length - 3);
-      }
-      cleanedResponse = cleanedResponse.trim();
-
-      const scoreJson = JSON.parse(cleanedResponse);
-      res.json(scoreJson);
-    } catch (error) {
-      console.error("Error in /api/score:", error);
-      res.status(500).json({ error: error.message || "An error occurred while evaluating your debate performance." });
+    if (!Array.isArray(history)) {
+      return res.status(400).json({ error: 'History must be an array of messages.'})
     }
-  });
 
-  // Serve Frontend
-  const distPath = path.join(process.cwd(), "../Client/dist");
-  app.use(express.static(distPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
+    const systemPrompt = `You're are JUDGE, switching from opponent to referee.
+    Evaluate only the user's argument in the transcript.
+    Respond with STRICT json only, no markdown fences: { score: number, advice: string, improvement: string }.`;
 
-  app.listen(PORT, "localhost", () => {
-    console.log(`Server running on http://localhost:${PORT} in ${process.env.NODE_ENV || "development"} mode`);
-  });
-}
+    const transcript = history
+    .map((msg) => `${msg.role === 'user' ? 'user' : 'Opponent'}: ${msg.text}`)
+    .json('\n\n')
 
-startServer();
+    const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript"\n${transcript}\n\nPlease evaluate the User's arguement.`;
+
+    const message = [
+      { role: 'System', content: systemPrompt },
+      { role: 'user', content: userMessage}
+    ];
+
+    const gptResponse = await callGroqChatCompletion(message, true);
+
+    let cleanedResponse = gptResponse.trim();
+    if (cleanedResponse.startsWith("``json")) {
+      cleanedResponse = cleanedResponse.substring(7);
+    } else if (cleanedResponse.startsWith("``")) {
+      cleanedResponse = cleanedResponse.substring(0, cleanedResponse.length - 3);
+    }
+    cleanedResponse = cleanedResponse.trim();
+
+    const scoreJson = JSON.parse(cleanedResponse);
+    res.json(scoreJson);
+
+  } catch (error) {
+    console.error('Error in /api/score: ', error);
+    res.status(500).json({ error: error.message || 'An error occurred while evaluating your debate performance'})
+  }
+});
+
+
+const distPath = path.join(__dirname, '../Client/dist');
+app.use(express.static(distPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'indec.html'))
+});
+
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+  console.log('Connected to Database!');
+  app.listen(3000, () => {
+    console.log('Server is running on port 3000')
+  });
+})
+  .catch((error) => {
+    console.error('Error connecting to Database!', error)
+});
