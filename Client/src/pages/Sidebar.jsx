@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { MessageSquare, Plus, Trash2, Sun, Moon, Settings, PanelLeftClose, PanelLeft, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MessageSquare, Plus, Trash2, Sun, Moon, Settings, PanelLeftClose, PanelLeft, Sparkles, LogOut } from "lucide-react";
 import { useTheme } from "../components/Theme";
 
 export default function Sidebar({
@@ -172,26 +173,36 @@ export default function Sidebar({
           </button>
 
           {/* User Profile Card */}
-          <div className={`flex items-center rounded-2xl gap-3 transition-all ${
-            isOpen ? "px-3 py-2" : "py-2 justify-center"
-          }`}>
-            <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
-                M
+          <Link
+            to="/signin"
+            className={`flex items-center justify-between rounded-2xl transition-all cursor-pointer ${
+              isOpen ? "px-3 py-2 hover:bg-red-500/10 hover:text-red-500 group" : "py-2 justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800"
+            }`}
+            title="Sign out"
+          >
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="relative shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
+                  M
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
+              {isOpen && (
+                <div className="overflow-hidden text-left">
+                  <p className={`text-xs font-semibold truncate ${isDark ? "text-white group-hover:text-red-400" : "text-zinc-800 group-hover:text-red-600"}`}>
+                    Mama
+                  </p>
+                  <p className="text-[10px] text-zinc-500 truncate font-mono group-hover:text-red-400/80">
+                    mamacita1869@gmail.com
+                  </p>
+                </div>
+              )}
             </div>
             {isOpen && (
-              <div className="overflow-hidden">
-                <p className={`text-xs font-semibold truncate ${isDark ? "text-white" : "text-zinc-800"}`}>
-                  Mama
-                </p>
-                <p className="text-[10px] text-zinc-500 truncate font-mono">
-                  mamacita1869@gmail.com
-                </p>
-              </div>
+              <LogOut className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 shrink-0" />
             )}
-          </div>
+          </Link>
+
         </div>
       </aside>
     </>

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ShieldAlert, RefreshCw, PanelLeft } from "lucide-react";
+import { Routes, Route } from "react-router-dom";
 import Sidebar from "./pages/Sidebar";
 import InputArea from "./components/InputArea";
 import Dashboard from "./pages/Dashboard";
 import ChatBot from "./pages/ChatBot";
 import ReviewAndVerdict from "./pages/ReviewAndVerdict";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import { useTheme } from "./components/Theme";
 
 export default function App() {
@@ -260,164 +263,174 @@ export default function App() {
   };
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden font-sans select-none transition-colors duration-300 ${
-      theme === "dark" ? "bg-[#131314] text-[#E3E3E3]" : "bg-white text-[#1F1F1F]"
-    }`}>
-      {/* Collapsible Left Sidebar */}
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        chats={chats}
-        activeChatId={activeChatId}
-        onSelectChat={handleSelectChat}
-        onNewChat={handleNewChat}
-        onDeleteChat={handleDeleteChat}
-        onClearAll={handleClearAllHistory}
-      />
+    <Routes>
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route
+        path="/*"
+        element={
+          <div className={`flex h-screen w-screen overflow-hidden font-sans select-none transition-colors duration-300 ${
+            theme === "dark" ? "bg-[#131314] text-[#E3E3E3]" : "bg-white text-[#1F1F1F]"
+          }`}>
+            {/* Collapsible Left Sidebar */}
+            <Sidebar
+              isOpen={isSidebarOpen}
+              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+              chats={chats}
+              activeChatId={activeChatId}
+              onSelectChat={handleSelectChat}
+              onNewChat={handleNewChat}
+              onDeleteChat={handleDeleteChat}
+              onClearAll={handleClearAllHistory}
+            />
 
-      {/* Main Container */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Global Error Banner */}
-        {errorBanner && (
-          <div className="bg-red-900/90 border-b border-red-700/50 text-red-100 px-4 py-2.5 text-xs font-mono text-center flex items-center justify-center gap-2.5 z-50 sticky top-0 backdrop-blur-md">
-            <ShieldAlert className="w-4 h-4 text-red-200 shrink-0" />
-            <span>{errorBanner}</span>
-            <button
-              onClick={() => setErrorBanner(null)}
-              className="ml-4 underline hover:text-white cursor-pointer text-zinc-300"
-            >
-              Dismiss
-            </button>
-            <button
-              onClick={handleRetryClash}
-              className="ml-2 px-2 py-0.5 bg-red-800 rounded border border-red-600 hover:bg-red-700 text-[10px] inline-flex items-center gap-1 cursor-pointer text-white"
-            >
-              <RefreshCw className="w-3 h-3" /> Retry Arena
-            </button>
-          </div>
-        )}
+            {/* Main Container */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+              {/* Global Error Banner */}
+              {errorBanner && (
+                <div className="bg-red-900/90 border-b border-red-700/50 text-red-100 px-4 py-2.5 text-xs font-mono text-center flex items-center justify-center gap-2.5 z-50 sticky top-0 backdrop-blur-md">
+                  <ShieldAlert className="w-4 h-4 text-red-200 shrink-0" />
+                  <span>{errorBanner}</span>
+                  <button
+                    onClick={() => setErrorBanner(null)}
+                    className="ml-4 underline hover:text-white cursor-pointer text-zinc-300"
+                  >
+                    Dismiss
+                  </button>
+                  <button
+                    onClick={handleRetryClash}
+                    className="ml-2 px-2 py-0.5 bg-red-800 rounded border border-red-600 hover:bg-red-700 text-[10px] inline-flex items-center gap-1 cursor-pointer text-white"
+                  >
+                    <RefreshCw className="w-3 h-3" /> Retry Arena
+                  </button>
+                </div>
+              )}
 
-        {/* Top Header Bar */}
-        <header className={`h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-30 transition-colors duration-300 ${
-          theme === "dark" ? "bg-[#131314] border-b border-zinc-800" : "bg-white border-b border-zinc-100"
-        }`}>
-          <div className="flex items-center gap-3">
-            {/* Sidebar toggle for mobile or when sidebar is collapsed */}
-            {!isSidebarOpen && (
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="p-2 rounded-lg hover:bg-zinc-200/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-zinc-500"
-                title="Open navigation menu"
-              >
-                <PanelLeft className="w-4.5 h-4.5" />
-              </button>
-            )}
-
-            <button
-              onClick={handleNewChat}
-              className="flex items-center gap-2.5 focus:outline-none text-left"
-            >
-              <h1 className={`text-xl font-bold tracking-tight uppercase ${
-                theme === "dark" ? "text-white" : "text-zinc-900"
+              {/* Top Header Bar */}
+              <header className={`h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-30 transition-colors duration-300 ${
+                theme === "dark" ? "bg-[#131314] border-b border-zinc-800" : "bg-white border-b border-zinc-100"
               }`}>
-                ArguBot
-              </h1>
-            </button>
-          </div>
+                <div className="flex items-center gap-3">
+                  {/* Sidebar toggle for mobile or when sidebar is collapsed */}
+                  {!isSidebarOpen && (
+                    <button
+                      onClick={() => setIsSidebarOpen(true)}
+                      className="p-2 rounded-lg hover:bg-zinc-200/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-zinc-500"
+                      title="Open navigation menu"
+                    >
+                      <PanelLeft className="w-4.5 h-4.5" />
+                    </button>
+                  )}
 
-          {/* Quick round indicator / active state display in header */}
-          {activeChat && activeChat.screen === "debate" && (
-            <div className="flex items-center gap-3 select-none">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
-                Exchanges: {userMessages.length} / {activeChat.totalRounds}
-              </span>
-              <div className="flex gap-1">
-                {Array.from({ length: activeChat.totalRounds }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
-                      idx < userMessages.length
-                        ? "bg-purple-500"
-                        : "bg-zinc-300 dark:bg-zinc-700"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </header>
+                  <button
+                    onClick={handleNewChat}
+                    className="flex items-center gap-2.5 focus:outline-none text-left"
+                  >
+                    <h1 className={`text-xl font-bold tracking-tight uppercase ${
+                      theme === "dark" ? "text-white" : "text-zinc-900"
+                    }`}>
+                      ArguBot
+                    </h1>
+                  </button>
+                </div>
 
-        {/* Dynamic Inner Panel Viewport */}
-        <main className="flex-1 flex flex-col overflow-hidden relative w-full">
-          <AnimatePresence mode="wait">
-            {!activeChat ? (
-              // 1. Landing Setup Screen
-              <motion.div
-                key="landing"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="flex-1 flex flex-col justify-between overflow-y-auto w-full"
-              >
-                <Dashboard
-                  onSelectPrompt={(pText) => setInputText(pText)}
-                  rounds={rounds}
-                  onSetRounds={setRounds}
-                />
-              </motion.div>
-            ) : activeChat.screen === "debate" ? (
-              // 2. Conversation Feed Screen
-              <motion.div
-                key="debate"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex-1 flex flex-col overflow-hidden w-full"
-              >
-                <ChatBot
-                  activeChat={activeChat}
+                {/* Quick round indicator / active state display in header */}
+                {activeChat && activeChat.screen === "debate" && (
+                  <div className="flex items-center gap-3 select-none">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                      Exchanges: {userMessages.length} / {activeChat.totalRounds}
+                    </span>
+                    <div className="flex gap-1">
+                      {Array.from({ length: activeChat.totalRounds }).map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+                            idx < userMessages.length
+                              ? "bg-purple-500"
+                              : "bg-zinc-300 dark:bg-zinc-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </header>
+
+              {/* Dynamic Inner Panel Viewport */}
+              <main className="flex-1 flex flex-col overflow-hidden relative w-full">
+                <AnimatePresence mode="wait">
+                  {!activeChat ? (
+                    // 1. Landing Setup Screen
+                    <motion.div
+                      key="landing"
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -15 }}
+                      className="flex-1 flex flex-col justify-between overflow-y-auto w-full"
+                    >
+                      <Dashboard
+                        onSelectPrompt={(pText) => setInputText(pText)}
+                        rounds={rounds}
+                        onSetRounds={setRounds}
+                      />
+                    </motion.div>
+                  ) : activeChat.screen === "debate" ? (
+                    // 2. Conversation Feed Screen
+                    <motion.div
+                      key="debate"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex-1 flex flex-col overflow-hidden w-full"
+                    >
+                      <ChatBot
+                        activeChat={activeChat}
+                        isThinking={isThinking}
+                        handleTriggerScoring={handleTriggerScoring}
+                      />
+                    </motion.div>
+                  ) : (
+                    // 3. Verdict Scoring Screen
+                    <motion.div
+                      key="score"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex-1 flex flex-col overflow-y-auto w-full justify-start py-8"
+                    >
+                      <ReviewAndVerdict
+                        activeChat={activeChat}
+                        isCalculatingScore={isCalculatingScore}
+                        handleNewChat={handleNewChat}
+                        handleDebateBack={handleDebateBack}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </main>
+
+              {/* Shared Bottom Sticky Pill Input Container */}
+              {showInputArea && (
+                <InputArea
+                  value={inputText}
+                  onChange={setInputText}
+                  onSubmit={() => {
+                    if (activeChat) {
+                      handleSendMessage();
+                    } else {
+                      handleStartDebate(inputText);
+                    }
+                  }}
                   isThinking={isThinking}
-                  handleTriggerScoring={handleTriggerScoring}
+                  placeholder={getPlaceholderText()}
+                  disabled={isLastRoundAndWaiting || isThinking}
                 />
-              </motion.div>
-            ) : (
-              // 3. Verdict Scoring Screen
-              <motion.div
-                key="score"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex-1 flex flex-col overflow-y-auto w-full justify-start py-8"
-              >
-                <ReviewAndVerdict
-                  activeChat={activeChat}
-                  isCalculatingScore={isCalculatingScore}
-                  handleNewChat={handleNewChat}
-                  handleDebateBack={handleDebateBack}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </main>
-
-        {/* Shared Bottom Sticky Pill Input Container */}
-        {showInputArea && (
-          <InputArea
-            value={inputText}
-            onChange={setInputText}
-            onSubmit={() => {
-              if (activeChat) {
-                handleSendMessage();
-              } else {
-                handleStartDebate(inputText);
-              }
-            }}
-            isThinking={isThinking}
-            placeholder={getPlaceholderText()}
-            disabled={isLastRoundAndWaiting || isThinking}
-          />
-        )}
-      </div>
-    </div>
+              )}
+            </div>
+          </div>
+        }
+      />
+    </Routes>
   );
 }
+
