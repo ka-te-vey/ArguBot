@@ -32,3 +32,22 @@ exports.signupSchema = Joi.object({
     password: Joi.string()
     .required()
 });
+
+
+exports.acceptCodeSchma = Joi.object({
+    email: Joi.string(),
+
+    provideCode: Joi.number()
+    .required()
+});
+
+
+exports.changePassword = Joi.object({
+    newPassword: Joi.string()
+    .required()
+    .pattern(new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$'))
+    .message({
+        'string.pattern.base':
+        'Password must be at least 8 characters and contain one Capital case, Lower case and numbers'
+    })
+});

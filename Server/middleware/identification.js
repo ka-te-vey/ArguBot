@@ -27,3 +27,9 @@ exports.identifier = (req, res, next) => {
         return res.status(500).json({ success:false, message: 'An error occurred while verifying the token!' });
     }
 };
+
+
+exports.changePasswordSchema = Joi.object({
+    newPassword: Joi.string()
+    .required()
+})
