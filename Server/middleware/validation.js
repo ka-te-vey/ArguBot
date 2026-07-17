@@ -51,3 +51,20 @@ exports.changePassword = Joi.object({
         'Password must be at least 8 characters and contain one Capital case, Lower case and numbers'
     })
 });
+
+
+exports.acceptFPCodeSchema = Joi.object({
+    email: Joi.string()
+    .required()
+    .email({
+        tlds: { allow: ['com']}
+    }),
+    
+    provideCode: Joi.string()
+    .required()
+    .pattern(new RegExp('^[0-9]{5}$'))
+    .message({
+        'string.pattern.base': 
+        'Verification code must be a 6-digit number.'
+    })
+})

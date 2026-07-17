@@ -34,6 +34,16 @@ const userSchema = new mongoose.Schema({
     verificationCodeValidation: {
         type: String,
         select: false
+    },
+
+    forgotPasswordCode: {
+        type: String,
+        select: false
+    },
+
+    forgotPasswordCodeValidation: {
+        type: Number,
+        select: false
     }
 });
 
