@@ -10,7 +10,7 @@ const path = require('path');
 const app = express();
 
 
-const authRouter = require('../Server/route/authRoute');
+const authRouter = require('./route/authRoute');
 const { clear } = require('console');
 
 
@@ -30,7 +30,7 @@ async function callGroqChatCompletion(message, jsonMode = false) {
 
   const payload = {
     model: 'llama-3.3-70b-versatile',
-    message: message,
+    messages: messages,
   }
 
   if (jsonMode) {
@@ -76,7 +76,7 @@ app.post('/api/debate', async (req, res) => {
     Topix: "${opinion}".`;
 
     const message = [
-      { role: 'System', content: systemPrompt },
+      { role: 'system', content: systemPrompt },
       ...history.map((msg) => ({
         role: msg.role === 'user' ? 'user' : 'assistant',
         content: msg.text
@@ -93,7 +93,7 @@ app.post('/api/debate', async (req, res) => {
 });
 
 
-app.post('api/score', async (req, res) => {
+app.post('/api/score', async (req, res) => {
   try {
     const { opinion, history } = req.body;
 
@@ -111,9 +111,9 @@ app.post('api/score', async (req, res) => {
 
     const transcript = history
     .map((msg) => `${msg.role === 'user' ? 'user' : 'Opponent'}: ${msg.text}`)
-    .json('\n\n')
+    .join('\n\n')
 
-    const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript"\n${transcript}\n\nPlease evaluate the User's arguement.`;
+    const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript:\n${transcript}\n\nPlease evaluate the User's arguement.`;
 
     const message = [
       { role: 'System', content: systemPrompt },
@@ -143,7 +143,7 @@ app.post('api/score', async (req, res) => {
 const distPath = path.join(__dirname, '../Client/dist');
 app.use(express.static(distPath));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'indec.html'))
+  res.sendFile(path.join(distPath, 'index.html'))
 });
 
 

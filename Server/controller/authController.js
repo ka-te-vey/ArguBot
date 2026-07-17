@@ -1,8 +1,8 @@
-const { signinSchema, signupSchema, acceptCodeSchma, acceptFPCodeSchema } = require('../middleware/validation');
+const { signinSchema, signupSchema, acceptCodeSchema, acceptFPCodeSchema } = require('../middleware/validation');
 const jwt = require('jsonwebtoken');
 const { User } = require('../model/user');
 const { doHashValidation, doHash, hmacProcess } = require('../utils/hashing');
-const { sendMail } = require('../middleware/sendMail');
+// const { sendMail } = require('../middleware/sendMail');
 const { changePassword, changePasswordSchema } = require('../middleware/identification');
 const transport = require('../middleware/sendMail');
 
@@ -18,7 +18,7 @@ exports.signin = async(req, res) => {
 
         const existingUser = await User.findOne({ email }).select('+password')
         if(!existingUser){
-            return res.status(401).json({ success:false, message: 'User already existed!' })
+            return res.status(401).json({ success:false, message: 'User does not existed!' })
         }
 
         const isPasswordCorrect = await doHashValidation(password, existingUser.password);
@@ -32,12 +32,12 @@ exports.signin = async(req, res) => {
             verified: existingUser.verified
         }, process.env.TOKEN_SECRET,
             {
-                expiresIn: '1h'
+                expiresIn: '10m'
             }
         );
 
         res.cookie('Authorization', 'Bearer ' + token, {
-            expires: new Date(Date.now() + 8 + 360000),
+            expires: new Date(Date.now() + 10 + 360000),
             httpOnly: process.env.NODE_ENV === 'production',
             secure: process.env.NODE_ENV === 'production'
         }) .json ({
@@ -58,7 +58,7 @@ exports.signup = async(req, res) => {
     try {
         const { error } = signupSchema.validate({ name, email, password });
         if(error) {
-            return res.status(400).json({ success:false, message: 'User already exists!' })
+            return res.status(400).json({ success:false, message: error.message })
         }
 
         const hashedPassword = await doHash(password, 10);
@@ -99,14 +99,14 @@ exports.sendVerificationCode = async(req, res) => {
 
         const codeValue = Math.floor(10000 + Math.random() * 90000).toString();
 
-        let info = await WebTransport.sendMail({
-            from: process.env.NODE_CODE_SENDING_EMIAL_ADDESS,
+        let info = await transport.sendMail({
+            from: process.env.NODE_CODE_SENDING_EMIAL_ADDRESS,
             to: existingUser.email,
             subject: 'Verification Code',
             html: '<h1>' + codeValue + '</h1>'
         });
 
-        if (info.accept[0] === existingUser.email) {
+        if (info.accepted[0] === existingUser.email) {
             const hashedCodeValue = hmacProcess(codeValue, process.env.HMAC_VERIFICATION_CODE_SECRET);
             existingUser.verificationCode = hashedCodeValue;
             existingUser.verificationCodeValidation = Date.now();
@@ -117,7 +117,7 @@ exports.sendVerificationCode = async(req, res) => {
         }
 
     } catch (error) {
-        return res.status(500).json({ success:false, message: error.messasge });
+        return res.status(500).json({ success:false, message: error.message });
     }
 };
 
@@ -159,7 +159,7 @@ exports.verifyVerificationCode = async (req, res) => {
             existingUser.verificationCode = undefined;
             existingUser.verificationCodeValidation = undefined;
             await existingUser.save();
-            return res.status(200).json({ success:true, nmessage: 'You are now verified!' })
+            return res.status(200).json({ success:true, message: 'You are now verified!' })
         }
 
         return res.status(400).json({ success:false, message: 'Unexpected occured!' })
@@ -193,7 +193,7 @@ exports.changePassword = async(req, res) => {
         const hashedPassword = await doHash(newPassword, 10);
         existingUser.password = hashedPassword;
         await existingUser.save();
-        return res.status(200).json({ success:false, message: 'Password updated!' });
+        return res.status(200).json({ success:true, message: 'Password updated!' });
 
     } catch (error) {
         return res.status(500).json({ success:false, message: error.message})
@@ -208,13 +208,13 @@ exports.sendForgotPasswordCode = async(req, res) => {
         const existingUser = await User.findOne({ email });
 
         if(!existingUser) {
-            return res(401).json({ success:false, message: 'User does not exist!' })
+            return res(400).json({ success:false, message: 'User does not exist!' })
         }
 
         const codeValue = Math.floor(10000 + Math.random() * 90000).toString();
 
         let info = await transport.sendMail({
-            from: process.env.NODE_CODE_SENDING_EMIAL_ADDESS,
+            from: process.env.NODE_CODE_SENDING_EMIAL_ADDRESS,
             to: existingUser.email,
             subject: 'Verification Code',
             html: '<h1>' + codeValue + '</h1>'
@@ -223,7 +223,7 @@ exports.sendForgotPasswordCode = async(req, res) => {
         if(info.accepted[0] === existingUser.email) {
             const hashedCodeValue = hmacProcess(codeValue, process.env.HMAC_VERIFICATION_CODE_SECRET);
 
-            existingUser.sendForgotPasswordCode = hashedCodeValue;
+            existingUser.forgotPasswordCode = hashedCodeValue;
             existingUser.forgotPasswordCodeValidation = Date.now();
             await existingUser.save();
             return res.status(200).json({ success: true, message: 'Code Sent!' });
@@ -258,7 +258,7 @@ exports.verifyForgotPasswordCode = async(req, res) => {
             return res.status(400).json({ success:false, message: 'Something is wrong with the code!' })
         }
 
-        if(Date.now() - existingUser.forgotPasswordCodeValidation > 3 * 60 * 10000) {
+        if(Date.now() - existingUser.forgotPasswordCodeValidation > 3 * 60 * 1000) {
             return res.status(400).json({ success:false, message: 'Code has been expired!' })
         } 
 

@@ -1,10 +1,10 @@
-const Joi = require('Joi');
+const Joi = require('joi');
 
 exports.signinSchema = Joi.object({
     name: Joi.string()
+    .required()
     .min(5)
-    .max(40)
-    .required(),
+    .max(40),
 
 
     email: Joi.string()
@@ -59,7 +59,7 @@ exports.acceptFPCodeSchema = Joi.object({
     .email({
         tlds: { allow: ['com']}
     }),
-    
+
     provideCode: Joi.string()
     .required()
     .pattern(new RegExp('^[0-9]{5}$'))
@@ -67,4 +67,4 @@ exports.acceptFPCodeSchema = Joi.object({
         'string.pattern.base': 
         'Verification code must be a 6-digit number.'
     })
-})
+});
