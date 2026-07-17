@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../model/user');
 const { doHashValidation, doHash, hmacProcess } = require('../utils/hashing');
 const { sendMail } = require('../middleware/sendMail');
-const { changePassword } = require('../middleware/identification');
+const { changePassword, changePasswordSchema } = require('../middleware/identification');
 
 
 exports.signin = async(req, res) => {
@@ -165,5 +165,36 @@ exports.verifyVerificationCode = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success:false, message: error.message });
+    }
+};
+
+
+exports.changePassword = async(req, res) => {
+    const { userId, verified } = req.user;
+    const { newPassword } = req.body;
+
+    try {
+        const { error, value } = changePasswordSchema.validate({ newPassword });
+
+        if(error) {
+            return res.status(400).json({ success:false, message: error.message })
+        }
+
+        if(!verified) {
+            return res.status(400).json({ success:false, message: 'You are not verified user!' })
+        }
+
+        const existingUser = await User.findOne({ _id:userId}).select('+password');
+        if(!existingUser) {
+            return res.status(401).json({ success:false, message: 'User does not exists!' })
+        }
+
+        const hashedPassword = await doHash(newPassword, 10);
+        existingUser.password = hashedPassword;
+        await existingUser.save();
+        return res.status(200).json({ success:false, message: 'Password updated!' });
+
+    } catch (error) {
+        return res.status(500).json({ success:false, message: error.message})
     }
 };
