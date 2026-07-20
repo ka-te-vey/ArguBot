@@ -1,17 +1,10 @@
-GET http://localhost:3000/getAllUser
 
-
-###
-
-
-
-POST http://localhost3000/createUser
+POST http://localhost:3000/api/auth/Signin
 Content-Type: application/json
 
 {
-    "name": "",
-    "email": "",
-    "password": "",
+    "email": "oscar19092019@gmail.com",
+    "password": "Pich123!@#"
 }
 
 
@@ -20,3 +13,95 @@ Content-Type: application/json
 
 
 
+POST http://localhost:3000/api/auth/Signup
+Content-Type: application/json
+
+{
+    "name": "Papipich",
+    "email": "oscar19092019@gmail.com",
+    "password": "Pich123!@#"
+}
+
+
+
+###
+
+
+
+POST http://localhost:3000/api/auth/Signout
+Content-Type: application/json
+
+
+
+
+###
+
+
+
+PATCH http://localhost:3000/api/auth/Send-verification-code
+Content-Type: application/json
+Client: not-browser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTVkYTU1ZDIzZjFlNjg0NTYxMmY0NDQiLCJlbWFpbCI6Im9zY2FyMTkwOTIwMTlAZ21haWwuY29tIiwidmVyaWZpZWQiOmZhbHNlLCJpYXQiOjE3ODQ1MjIxMTMsImV4cCI6MTc4NDUyMjcxM30.-lBu6Q6-GlXd_aevvb6Aam5x8MedyVcBCIGzwrBI7aU
+
+{
+    "email": "oscar19092019@gmail.com"
+}
+
+
+
+###
+
+
+
+PATCH http://localhost:3000/api/auth/Verify-verification-code
+Content-Type: application/json
+Client: not-browser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTVkYTU1ZDIzZjFlNjg0NTYxMmY0NDQiLCJlbWFpbCI6Im9zY2FyMTkwOTIwMTlAZ21haWwuY29tIiwidmVyaWZpZWQiOmZhbHNlLCJpYXQiOjE3ODQ1MjIxMTMsImV4cCI6MTc4NDUyMjcxM30.-lBu6Q6-GlXd_aevvb6Aam5x8MedyVcBCIGzwrBI7aU
+
+{
+    "email": "oscar19092019@gmail.com",
+    "provideCode": "13430"
+}
+
+
+
+###
+
+
+
+PATCH http://localhost:3000/api/auth/Change-password
+Content-Type: application/json
+Client: not-browser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTVkYTU1ZDIzZjFlNjg0NTYxMmY0NDQiLCJlbWFpbCI6Im9zY2FyMTkwOTIwMTlAZ21haWwuY29tIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc4NDUyMjYwNywiZXhwIjoxNzg0NTIzMjA3fQ.pYs1GEUJXn53yCumNo0lrMP6wfgOlWglm_lFlt0sSao
+
+{
+    "newPassword": "PapiPich123$"
+}
+
+
+
+###
+
+
+
+PATCH http://localhost:3000/api/auth/Forgot-password
+Content-Type: application/json
+
+{
+    "email": "oscar19092019@gmail.com"
+}
+ 
+
+
+###
+
+
+
+PATCH http://localhost:3000/api/auth/New-password
+Content-Type: application/json
+
+{
+    "email": "oscar19092019@gmail.com",
+    "provideCode": "92475",
+    "newPassword": "Whatever123$"
+}
