@@ -56,6 +56,10 @@ export default function SignUp() {
       return;
     }
 
+    // Save registered user details
+    localStorage.setItem('user', JSON.stringify({ name, email }));
+    window.dispatchEvent(new Event('storage'));
+
     //success -> redirect user to sign in
     alert('Account created successfully!');
     navigate('/signin')

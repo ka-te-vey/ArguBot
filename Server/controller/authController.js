@@ -43,6 +43,11 @@ exports.signin = async(req, res) => {
         }) .json ({
             success: true,
             token,
+            user: {
+                id: existingUser._id,
+                name: existingUser.name,
+                email: existingUser.email
+            },
             message: 'Logged in successfully!'
         });
 
@@ -276,5 +281,21 @@ exports.verifyForgotPasswordCode = async(req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success:false, message: error.message});
+    }
+};
+
+
+exports.getMe = async (req, res) => {
+    try {
+        const { userId } = req.user.userId;
+
+        const user = await User.findById(userId).select('name email');
+
+        if(!user) {
+            return res.status(404).json({ success:false, message: 'User not found' })
+        }
+        return res.status(200).json({ success:true, user })
+    } catch (error) {
+        return res.status(500).json({ success:false, message: error.message });
     }
 };

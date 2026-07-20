@@ -50,6 +50,15 @@ export default function SignIn() {
         localStorage.setItem('token', data.token);
       }
 
+      if(data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      } else if (email) {
+        const fallbackName = email.split('@')[0];
+        localStorage.setItem('user', JSON.stringify({ name: fallbackName, email }));
+      }
+
+      window.dispatchEvent(new Event('storage'));
+
       // navigate to dashboard
       navigate('/');
     } catch (error) {

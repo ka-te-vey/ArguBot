@@ -11,10 +11,14 @@ export default function Sidebar({
   onSelectChat,
   onNewChat,
   onDeleteChat,
-  onClearAll
+  onClearAll,
+  user
 }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
+  const userName = user?.name || "Guest Debater";
+  const userEmail = user?.email || "user@argubot.ai";
+  const userInitial = userName ? userName.charAt(0).toUpperCase() : "";
 
   return (
     <>
@@ -181,17 +185,17 @@ export default function Sidebar({
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
-                  
+                  {userInitial}
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
               </div>
               {isOpen && (
                 <div className="overflow-hidden text-left">
                   <p className={`text-xs font-semibold truncate ${isDark ? "text-white group-hover:text-red-400" : "text-zinc-800 group-hover:text-red-600"}`}>
-                    Guest Debater
+                    {userName}
                   </p>
                   <p className="text-[10px] text-zinc-500 truncate font-mono group-hover:text-red-400/80">
-                    user@argubot.ai
+                    {userEmail}
                   </p>
                 </div>
               )}
@@ -200,7 +204,6 @@ export default function Sidebar({
               <LogOut className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 shrink-0" />
             )}
           </Link>
-
         </div>
       </aside>
     </>

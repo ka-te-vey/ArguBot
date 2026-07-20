@@ -16,5 +16,7 @@ Router.patch('/Change-password', identifier,authController.changePassword);
 Router.patch('/Forgot-password', authController.sendForgotPasswordCode);
 Router.patch('/New-password', authController.verifyForgotPasswordCode);
 
+Router.get('/me', identifier, authController.getMe);
+
 
 module.exports = Router;

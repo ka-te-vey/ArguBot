@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ShieldAlert, RefreshCw, PanelLeft } from "lucide-react";
+import { ShieldAlert, RefreshCw, PanelLeft, Database } from "lucide-react";
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./pages/Sidebar";
 import InputArea from "./components/InputArea";
@@ -15,6 +15,50 @@ import { useTheme } from "./components/Theme";
 
 export default function App() {
   const { theme } = useTheme();
+
+
+  // Initialize user state from localStorage
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  useEffect (() => {
+    const token = localStorage.getItem('token');
+
+    if(token) {
+      fetch('http://localhost:3000/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success && data.user) {
+          setUser(data.user);
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+      })
+      .catch(error => console.error('Failed to fetch user profiles: ', error));
+    }
+  }, [])
+
+  // Keep user state in sync with localStorage updates
+  useEffect(() => {
+    const syncUser = () => {
+      const saved = localStorage.getItem('user');
+      setUser(saved ? JSON.parse(saved) : null);
+    };
+
+    window.addEventListener("storage", syncUser);
+    // Also check on mount / route changes
+    syncUser();
+
+    return () => window.removeEventListener("storage", syncUser);
+  }, []);
+
 
   // Sidebar collapsible state
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
@@ -286,6 +330,7 @@ export default function App() {
               onNewChat={handleNewChat}
               onDeleteChat={handleDeleteChat}
               onClearAll={handleClearAllHistory}
+              user={user}
             />
 
             {/* Main Container */}
