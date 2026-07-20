@@ -21,6 +21,8 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // validate
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
@@ -36,11 +38,33 @@ export default function SignUp() {
     setError("");
     setIsLoading(true);
 
-    // Mock authentication delay
-    setTimeout(() => {
+    // send POST request to backend API
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/Signup', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await response.json();
+
+    // Handle response error
+    if(!response.ok) {
+      setError(data.message || "Registration failed. Please try again!")
+      return;
+    }
+
+    //success -> redirect user to sign in
+    alert('Account created successfully!');
+    navigate('/signin')
+    } catch (error) {
+      console.error('Signin error: ', error);
+      setError('Unable to connect to server.')
+    } finally {
       setIsLoading(false);
-      navigate("/");
-    }, 1500);
+    }
   };
 
   return (
@@ -65,15 +89,8 @@ export default function SignUp() {
       >
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-6">
-          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800/60 mb-3 border border-zinc-200/35 dark:border-zinc-700/35">
-            <Sparkles className="w-6.5 h-6.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" style={{ fill: "url(#brand-glow-up)" }} />
-            <svg width="0" height="0" className="absolute">
-              <linearGradient id="brand-glow-up" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#4285F4" />
-                <stop offset="50%" stopColor="#9B72CB" />
-                <stop offset="100%" stopColor="#D96570" />
-              </linearGradient>
-            </svg>
+          <div className="flex items-center justify-center w-12 h-12 rounded-2xl argubot-logo-circle mb-3 shadow-md">
+            <Sparkles className="w-6.5 h-6.5 text-[#b3b3ff]" />
           </div>
           <span className="font-display text-lg font-black tracking-widest uppercase bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-1">
             ArguBot
@@ -229,7 +246,7 @@ export default function SignUp() {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 gemini-gradient-bg hover:opacity-90 active:opacity-95 text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`w-full py-3 argubot-cta-btn font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
               isLoading && "opacity-75 cursor-not-allowed"
             }`}
           >

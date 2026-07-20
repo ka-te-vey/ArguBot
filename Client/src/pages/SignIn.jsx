@@ -17,18 +17,59 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // validate
     if (!email || !password) {
       setError("Please fill in all fields.");
       return;
     }
+
     setError("");
     setIsLoading(true);
 
-    // Mock authentication delay
-    setTimeout(() => {
+    // send POST request to backend API
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/Signin', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      // handle response error
+      if(!response.ok) {
+        setError(data.message || 'Invalid credentails.')
+        return;
+      }
+      
+      // success -> store token in localstorage
+      if(data.token) {
+        localStorage.setItem('token', data.token);
+      }
+
+      // navigate to dashboard
+      navigate('/');
+    } catch (error) {
+      console.error('Signin error: ', error);
+      setError('Unable to connect to the server.')
+    } finally {
       setIsLoading(false);
-      navigate("/");
-    }, 1500);
+    }
+
+    const token = localStorage.getItem('token');
+
+    const response = await fetch('http://localhost:3000/api/auth/Change-password', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client': 'not-browser',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ newPassword: 'NewPassword123!' })
+    });
   };
 
   return (
@@ -53,15 +94,8 @@ export default function SignIn() {
       >
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800/60 mb-3 border border-zinc-200/35 dark:border-zinc-700/35">
-            <Sparkles className="w-6.5 h-6.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" style={{ fill: "url(#brand-glow)" }} />
-            <svg width="0" height="0" className="absolute">
-              <linearGradient id="brand-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#4285F4" />
-                <stop offset="50%" stopColor="#9B72CB" />
-                <stop offset="100%" stopColor="#D96570" />
-              </linearGradient>
-            </svg>
+          <div className="flex items-center justify-center w-12 h-12 rounded-2xl argubot-logo-circle mb-3 shadow-md">
+            <Sparkles className="w-6.5 h-6.5 text-[#b3b3ff]" />
           </div>
           <span className="font-display text-lg font-black tracking-widest uppercase bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-1">
             ArguBot
@@ -116,13 +150,12 @@ export default function SignIn() {
               <label htmlFor="password" className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
                 Password
               </label>
-              <a
-                href="#forgot"
-                className="text-[10px] font-bold tracking-wide uppercase text-purple-500 hover:text-purple-400 transition-colors"
-                onClick={(e) => e.preventDefault()}
+              <Link
+                to="/forgot-password"
+                className="text-xs font-semibold text-purple-500 hover:text-purple-400 transition-colors"
               >
-                Forgot?
-              </a>
+                Forgot Password?
+              </Link> 
             </div>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400">
@@ -167,7 +200,7 @@ export default function SignIn() {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 gemini-gradient-bg hover:opacity-90 active:opacity-95 text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-purple-500/10 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`w-full py-3 argubot-cta-btn font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
               isLoading && "opacity-75 cursor-not-allowed"
             }`}
           >
@@ -175,7 +208,7 @@ export default function SignIn() {
               <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
               <>
-                <span>Enter the Arena</span>
+                <span>Enter</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

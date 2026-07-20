@@ -55,8 +55,8 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
                     : "bg-zinc-50 border-zinc-200"
                 }`}
               >
-                <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-3">
-                  <Trophy className="w-5 h-5 text-purple-500" />
+                <div className="w-12 h-12 rounded-full argubot-icon-circle flex items-center justify-center mx-auto mb-3 shadow-xs">
+                  <Trophy className="w-5 h-5" />
                 </div>
                 <h3 className={`text-base font-bold mb-1 ${isDark ? "text-white" : "text-zinc-900"}`}>
                   Debate Finalized
@@ -68,7 +68,7 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
                   id="goto-verdict-btn"
                   type="button"
                   onClick={handleTriggerScoring}
-                  className="px-6 py-2.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white rounded-full text-xs font-bold tracking-wider uppercase inline-flex items-center gap-2 cursor-pointer transition-all shadow-md hover:opacity-95"
+                  className="px-6 py-2.5 argubot-cta-btn rounded-full text-xs font-bold tracking-wider uppercase inline-flex items-center gap-2 cursor-pointer transition-all shadow-md"
                 >
                   Analyze Verdict
                   <ArrowRight className="w-3.5 h-3.5" />

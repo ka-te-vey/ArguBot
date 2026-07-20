@@ -46,8 +46,8 @@ export function MessageBubble({ msg, index, isLastMessage }) {
     >
       {/* AI Sparkle Icon on Left */}
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800/40 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-800">
-          <Sparkles className="w-4 h-4 text-purple-500" />
+        <div className="w-8 h-8 rounded-full argubot-logo-circle flex items-center justify-center shrink-0 shadow-xs">
+          <Sparkles className="w-4 h-4 text-[#b3b3ff]" />
         </div>
       )}
 
@@ -85,8 +85,8 @@ export function MessageBubble({ msg, index, isLastMessage }) {
 
       {/* User Icon on Right */}
       {isUser && (
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500/10 to-purple-500/10 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-800">
-          <User className={`w-4 h-4 ${isDark ? "text-zinc-300" : "text-zinc-600"}`} />
+        <div className="w-8 h-8 rounded-full argubot-icon-circle flex items-center justify-center shrink-0 shadow-xs">
+          <User className="w-4 h-4" />
         </div>
       )}
     </motion.div>
@@ -101,8 +101,8 @@ export function ThinkingIndicator() {
       exit={{ opacity: 0 }}
       className="flex gap-4 w-full justify-start"
     >
-      <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800/40 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-800">
-        <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+      <div className="w-8 h-8 rounded-full argubot-logo-circle flex items-center justify-center shrink-0 shadow-xs">
+        <Sparkles className="w-4 h-4 text-[#b3b3ff] animate-pulse" />
       </div>
       <div className="flex flex-col space-y-2 w-full max-w-[70%]">
         {/* Modern shimmer line placeholder bars representing thinking */}

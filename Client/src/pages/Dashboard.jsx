@@ -17,16 +17,8 @@ export default function Dashboard({ onSelectPrompt, rounds, onSetRounds }) {
         transition={{ duration: 0.6 }}
         className="mb-8"
       >
-        <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800/40">
-          <Sparkles className="w-8 h-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse" style={{ fill: "url(#gemini-gradient)" }} />
-          {/* Custom inline SVG gradient mapping for the icons if needed */}
-          <svg width="0" height="0" className="absolute">
-            <linearGradient id="gemini-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4285F4" />
-              <stop offset="50%" stopColor="#9B72CB" />
-              <stop offset="100%" stopColor="#D96570" />
-            </linearGradient>
-          </svg>
+        <div className="relative flex items-center justify-center w-16 h-16 rounded-full argubot-logo-circle shadow-lg">
+          <Sparkles className="w-8 h-8 text-[#b3b3ff] animate-pulse" />
         </div>
       </motion.div>
 

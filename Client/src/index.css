@@ -7,6 +7,66 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+/* ArguBot Custom Color Tokens & Utility Classes
+   #b3b3ff: Constant accent across modes (icon circle, badge accents, CTA button fill)
+   Light mode badges & logo circle: #38348a (darkened version for high contrast under text)
+   Dark mode badges & logo circle: #33335c (deepened version with #b3b3ff text/icons)
+*/
+
+.argubot-badge {
+  background-color: #38348a;
+  color: #ffffff;
+  border: 1px solid rgba(179, 179, 255, 0.35);
+}
+
+.dark .argubot-badge {
+  background-color: #33335c;
+  color: #b3b3ff;
+  border: 1px solid rgba(179, 179, 255, 0.2);
+}
+
+.argubot-logo-circle {
+  background-color: #38348a;
+  color: #b3b3ff;
+}
+
+.dark .argubot-logo-circle {
+  background-color: #33335c;
+  color: #b3b3ff;
+}
+
+.argubot-icon-circle {
+  background-color: #b3b3ff;
+  color: #38348a;
+}
+
+.dark .argubot-icon-circle {
+  background-color: #b3b3ff;
+  color: #131314;
+}
+
+.argubot-cta-btn {
+  background-color: #b3b3ff;
+  color: #1e1e1f;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.argubot-cta-btn:hover {
+  background-color: #a2a2ff;
+  box-shadow: 0 4px 14px rgba(179, 179, 255, 0.35);
+}
+
+.dark .argubot-cta-btn {
+  background-color: #b3b3ff;
+  color: #131314;
+}
+
+.dark .argubot-cta-btn:hover {
+  background-color: #c2c2ff;
+  box-shadow: 0 4px 14px rgba(179, 179, 255, 0.25);
+}
+
 /* Custom scrollbars matching the light/dark themes */
 ::-webkit-scrollbar {
   width: 6px;

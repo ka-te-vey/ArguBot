@@ -37,8 +37,10 @@ export default function Sidebar({
       >
         {/* Top Header Row of Sidebar */}
         <div className="h-14 flex items-center justify-between px-4">
-          <div className={`flex items-center gap-2 ${!isOpen && "md:hidden"}`}>
-            <Sparkles className="w-4 h-4 text-purple-500" />
+          <div className={`flex items-center gap-2.5 ${!isOpen && "md:hidden"}`}>
+            <div className="w-7 h-7 rounded-full argubot-logo-circle flex items-center justify-center shrink-0 shadow-xs">
+              <Sparkles className="w-4 h-4" />
+            </div>
             <span className={`font-display text-base font-extrabold tracking-tight uppercase ${isDark ? "text-white" : "text-zinc-900"}`}>
               ArguBot
             </span>
@@ -56,14 +58,10 @@ export default function Sidebar({
         <div className="px-3 py-2">
           <button
             onClick={onNewChat}
-            className={`flex items-center gap-3 w-full rounded-full transition-all duration-200 cursor-pointer shadow-xs ${
+            className={`flex items-center gap-3 w-full rounded-full transition-all duration-200 cursor-pointer shadow-xs argubot-cta-btn ${
               isOpen
                 ? "px-4 py-3 text-sm font-medium"
                 : "p-3 justify-center"
-            } ${
-              isDark
-                ? "bg-[#131314] hover:bg-[#282A2D] text-white border border-zinc-800"
-                : "bg-[#E1E9F5] hover:bg-[#D3E3FD] text-[#041E49] border border-transparent"
             }`}
           >
             <Plus className="w-5 h-5" />
@@ -183,17 +181,17 @@ export default function Sidebar({
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
-                  M
+                  
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
               </div>
               {isOpen && (
                 <div className="overflow-hidden text-left">
                   <p className={`text-xs font-semibold truncate ${isDark ? "text-white group-hover:text-red-400" : "text-zinc-800 group-hover:text-red-600"}`}>
-                    Mama
+                    Guest Debater
                   </p>
                   <p className="text-[10px] text-zinc-500 truncate font-mono group-hover:text-red-400/80">
-                    mamacita1869@gmail.com
+                    user@argubot.ai
                   </p>
                 </div>
               )}

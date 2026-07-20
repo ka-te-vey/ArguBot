@@ -92,7 +92,7 @@ export default function InputArea({
                   id="send-message-btn"
                   type="button"
                   onClick={onSubmit}
-                  className="p-2 rounded-full gemini-gradient-bg text-white shadow-md hover:opacity-95 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+                  className="p-2 rounded-full argubot-cta-btn shadow-md hover:opacity-95 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
                   title="Send counterpoint"
                 >
                   <ArrowUp className="w-4 h-4 stroke-[3px]" />

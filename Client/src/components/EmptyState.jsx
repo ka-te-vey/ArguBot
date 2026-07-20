@@ -10,7 +10,7 @@ export function RoundsSelector({ rounds, onSetRounds }) {
       isDark ? "bg-[#1E1E1F] border-zinc-800" : "bg-zinc-50 border-zinc-200"
     }`}>
       <div className="flex items-center gap-2">
-        <HelpCircle className="w-4 h-4 text-purple-500 shrink-0" />
+        <HelpCircle className="w-4 h-4 text-[#b3b3ff] shrink-0" />
         <span className={`text-xs font-semibold ${isDark ? "text-zinc-300" : "text-zinc-600"}`}>
           Match Duration (Rounds of Exchanges):
         </span>
@@ -24,7 +24,7 @@ export function RoundsSelector({ rounds, onSetRounds }) {
             onClick={() => onSetRounds(r)}
             className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider transition-all cursor-pointer ${
               rounds === r
-                ? "bg-white dark:bg-[#282A2D] text-purple-600 dark:text-purple-400 shadow-xs"
+                ? "argubot-badge shadow-xs"
                 : `text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300`
             }`}
           >
@@ -50,15 +50,15 @@ export function SuggestionGrid({ onSelectPrompt }) {
   const renderIcon = (iconName) => {
     switch (iconName) {
       case "Pizza":
-        return <Pizza className="w-5 h-5 text-amber-500" />;
+        return <Pizza className="w-4 h-4" />;
       case "Laptop":
-        return <Laptop className="w-5 h-5 text-blue-500" />;
+        return <Laptop className="w-4 h-4" />;
       case "Cat":
-        return <Cat className="w-5 h-5 text-orange-500" />;
+        return <Cat className="w-4 h-4" />;
       case "Sparkles":
-        return <Sparkles className="w-5 h-5 text-purple-500" />;
+        return <Sparkles className="w-4 h-4" />;
       default:
-        return <GraduationCap className="w-5 h-5 text-blue-500" />;
+        return <GraduationCap className="w-4 h-4" />;
     }
   };
 
@@ -82,14 +82,10 @@ export function SuggestionGrid({ onSelectPrompt }) {
           </p>
 
           <div className="flex justify-between items-center mt-3">
-            <span className={`text-[9px] font-mono tracking-widest uppercase ${
-              isDark ? "text-zinc-500" : "text-zinc-400"
-            }`}>
+            <span className="text-[9px] font-mono tracking-widest uppercase px-2.5 py-0.5 rounded-full argubot-badge font-bold">
               {s.category}
             </span>
-            <div className={`p-1.5 rounded-full transition-colors ${
-              isDark ? "bg-[#131314] group-hover:bg-[#1E1E1F]" : "bg-white group-hover:bg-zinc-100"
-            }`}>
+            <div className="p-2 rounded-full argubot-icon-circle flex items-center justify-center shadow-xs">
               {renderIcon(s.icon || "")}
             </div>
           </div>

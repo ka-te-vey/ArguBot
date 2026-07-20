@@ -49,14 +49,14 @@ export default function ReviewAndVerdict({
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-            className="w-16 h-16 rounded-full border-4 border-zinc-100 dark:border-zinc-800 border-t-purple-500 border-b-blue-500 animate-spin"
+            className="w-16 h-16 rounded-full border-4 border-zinc-200 dark:border-zinc-800 border-t-[#b3b3ff] animate-spin"
           />
-          <div className="absolute w-8 h-8 rounded-full bg-transparent flex items-center justify-center">
-            <Award className="w-4 h-4 text-purple-500" />
+          <div className="absolute w-8 h-8 rounded-full argubot-icon-circle flex items-center justify-center shadow-xs">
+            <Award className="w-4 h-4" />
           </div>
         </div>
 
-        <span className="text-[10px] font-mono tracking-widest uppercase text-purple-500 font-bold mb-3">
+        <span className="text-[10px] font-mono tracking-widest uppercase argubot-badge px-3 py-1 rounded-full font-bold mb-3 inline-block">
           ArguBot Evaluation
         </span>
 
@@ -80,7 +80,7 @@ export default function ReviewAndVerdict({
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ duration: 11, ease: "easeInOut" }}
-            className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+            className="h-full bg-[#b3b3ff]"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function ReviewAndVerdict({
           id="failed-reset-btn"
           type="button"
           onClick={handleNewChat}
-          className="mt-6 w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-md hover:opacity-95"
+          className="mt-6 w-full py-3 argubot-cta-btn font-medium text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-md"
         >
           Return to Arena Setup
         </button>
@@ -113,7 +113,7 @@ export default function ReviewAndVerdict({
     <div className="w-full max-w-xl mx-auto px-4 py-4 md:py-8 flex flex-col justify-start">
       {/* Title block */}
       <div className="text-center mb-8">
-        <span className="text-[10px] font-mono text-purple-500 uppercase tracking-widest font-black block mb-1">
+        <span className="text-[10px] font-mono uppercase tracking-widest font-black inline-block px-3 py-1 rounded-full argubot-badge mb-2">
           THE DECISION ROOM
         </span>
         <h1 className={`text-4xl md:text-5xl font-extrabold tracking-tight select-none leading-none ${
@@ -182,7 +182,7 @@ export default function ReviewAndVerdict({
           id="debate-again-btn"
           type="button"
           onClick={handleNewChat}
-          className="flex-1 py-3 px-5 text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:opacity-95 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-500/10"
+          className="flex-1 py-3 px-5 argubot-cta-btn rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
         >
           <RotateCcw className="w-4 h-4 animate-spin-slow" />
           New Chat
