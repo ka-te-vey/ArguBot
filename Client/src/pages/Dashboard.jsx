@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { GiPublicSpeaker } from "react-icons/gi";
 import { motion } from "motion/react";
 import { RoundsSelector, SuggestionGrid } from "../components/EmptyState";
 import { useTheme } from "../components/Theme";
+import { TopicSelector } from "../components/TopicSelector";
+import { RoleSelector } from "../components/RoleSelector";
 
 export default function Dashboard({ user, onSelectPrompt, rounds, onSetRounds }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const userName = user?.name || "debater";
+
+  const [selectCategory, setSelectCategory] = useState("");
+  const [selectRole, setSelectRole] = useState("debater");
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center py-8 md:py-16 px-6 max-w-4xl mx-auto w-full select-none">
@@ -55,6 +60,10 @@ export default function Dashboard({ user, onSelectPrompt, rounds, onSetRounds })
         <RoundsSelector rounds={rounds} onSetRounds={onSetRounds} />
       </motion.div>
 
+      {/* Topic & Role selector */}
+      <RoleSelector selectRole={selectRole} onSelectRole={setSelectRole} />
+      <TopicSelector selectCategory={selectCategory} onSelectCategory={setSelectCategory} />
+
       {/* Suggested chips 2x2 grid */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -67,3 +76,4 @@ export default function Dashboard({ user, onSelectPrompt, rounds, onSetRounds })
     </div>
   );
 }
+

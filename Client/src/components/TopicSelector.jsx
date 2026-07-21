@@ -28,9 +28,9 @@ export function TopicSelector({ selectCategory, onSelectCategory }) {
                         key={item.id}
                         type='button'
                         onClick={() => 
-                            onSelectCategory(selectedCategory === item.label ? '' : item.label)
+                            onSelectCategory(selectCategory === item.label ? '' : item.label)
                         }
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${ selectedCategory === item.label ? "bg-purple-600 text-white border-purple-500 shadow-md"                                                          
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${ selectCategory === item.label ? "bg-purple-600 text-white border-purple-500 shadow-md"                                                          
                     : isDark ? "bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700" : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200/70"}`}
                     >
                         {item.label}
