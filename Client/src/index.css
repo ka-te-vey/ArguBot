@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ArguBot Custom Color Tokens & Utility Classes
+   #b3b3ff: Constant accent across modes (icon circle, badge accents, CTA button fill)
+   Light mode badges & logo circle: #38348a (darkened version for high contrast under text)
+   Dark mode badges & logo circle: #33335c (deepened version with #b3b3ff text/icons)
+*/
+
+.argubot-badge {
+  background-color: #38348a;
+  color: #ffffff;
+  border: 1px solid rgba(179, 179, 255, 0.35);
+}
+
+.dark .argubot-badge {
+  background-color: #33335c;
+  color: #b3b3ff;
+  border: 1px solid rgba(179, 179, 255, 0.2);
+}
+
+.argubot-logo-circle {
+  background-color: #38348a;
+  color: #b3b3ff;
+}
+
+.dark .argubot-logo-circle {
+  background-color: #33335c;
+  color: #b3b3ff;
+}
+
+.argubot-icon-circle {
+  background-color: #b3b3ff;
+  color: #38348a;
+}
+
+.dark .argubot-icon-circle {
+  background-color: #b3b3ff;
+  color: #131314;
+}
+
+.argubot-cta-btn {
+  background-color: #b3b3ff;
+  color: #1e1e1f;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.argubot-cta-btn:hover {
+  background-color: #a2a2ff;
+  box-shadow: 0 4px 14px rgba(179, 179, 255, 0.35);
+}
+
+.dark .argubot-cta-btn {
+  background-color: #b3b3ff;
+  color: #131314;
+}
+
+.dark .argubot-cta-btn:hover {
+  background-color: #c2c2ff;
+  box-shadow: 0 4px 14px rgba(179, 179, 255, 0.25);
+}
+
+/* Custom scrollbars matching the light/dark themes */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Gemini Signature Gradient */
+.gemini-gradient-text {
+  background: linear-gradient(74deg, #4285F4 0%, #9B72CB 35%, #D96570 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gemini-gradient-bg {
+  background: linear-gradient(74deg, #4285F4 0%, #9B72CB 35%, #D96570 100%);
+}
+
+.gemini-gradient-border {
+  border-image: linear-gradient(74deg, #4285F4 0%, #9B72CB 35%, #D96570 100%) 1;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #1f1f1f 25%, #2a2a2a 50%, #1f1f1f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
