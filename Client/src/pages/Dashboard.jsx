@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { GiPublicSpeaker } from "react-icons/gi";
 import { motion } from "motion/react";
 import { RoundsSelector, SuggestionGrid } from "../components/EmptyState";
 import { useTheme } from "../components/Theme";
@@ -10,8 +10,8 @@ export default function Dashboard({ user, onSelectPrompt, rounds, onSetRounds })
   const userName = user?.name || "debater";
 
   return (
-    <div className="flex-1 flex flex-col justify-center items-center py-6 md:py-16 px-4 max-w-2xl mx-auto w-full select-none">
-      {/* Centered Sparkles Animated Logo */}
+    <div className="flex-1 flex flex-col justify-center items-center py-8 md:py-16 px-6 max-w-4xl mx-auto w-full select-none">
+      {/* Centered Public Speaker Animated Logo */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -19,7 +19,7 @@ export default function Dashboard({ user, onSelectPrompt, rounds, onSetRounds })
         className="mb-8"
       >
         <div className="relative flex items-center justify-center w-16 h-16 rounded-full argubot-logo-circle shadow-lg">
-          <Sparkles className="w-8 h-8 text-[#b3b3ff] animate-pulse" />
+          <GiPublicSpeaker className="w-8 h-8 text-[#b3b3ff]" />
         </div>
       </motion.div>
 

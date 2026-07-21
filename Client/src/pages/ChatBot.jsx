@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Trophy, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { GiMedallist } from "react-icons/gi";
 import { motion, AnimatePresence } from "motion/react";
 import { MessageBubble, ThinkingIndicator } from "../components/ChatFeed";
 import { useTheme } from "../components/Theme";
 
-export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }) {
+export default function ChatBot({ user, activeChat, isThinking, handleTriggerScoring }) {
   const messagesEndRef = useRef(null);
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -46,6 +47,7 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
               <MessageBubble
                 key={index}
                 msg={msg}
+                user={user}
                 index={index}
                 isLastMessage={index === activeChat.history.length - 1}
                 onStreamComplete={() => setIsStreaming(false)}
@@ -68,7 +70,7 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
                 }`}
               >
                 <div className="w-12 h-12 rounded-full argubot-icon-circle flex items-center justify-center mx-auto mb-3 shadow-xs">
-                  <Trophy className="w-5 h-5" />
+                  <GiMedallist className="w-6 h-6" />
                 </div>
                 <h3 className={`text-base font-bold mb-1 ${isDark ? "text-white" : "text-zinc-900"}`}>
                   Debate Finalized

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, User } from "lucide-react";
+import { User } from "lucide-react";
+import { FcSpeaker } from "react-icons/fc";
 import { motion } from "motion/react";
 import { useTheme } from "./Theme";
 
@@ -31,7 +32,7 @@ export function StreamingText({ text, active, onStreamComplete }) {
   return <span className="leading-relaxed whitespace-pre-wrap">{displayedText}</span>;
 }
 
-export function MessageBubble({ msg, index, isLastMessage, onStreamComplete }) {
+export function MessageBubble({ user, msg, index, isLastMessage, onStreamComplete }) {
   const isUser = msg.role === "user";
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -46,10 +47,10 @@ export function MessageBubble({ msg, index, isLastMessage, onStreamComplete }) {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className={`flex gap-4 w-full ${isUser ? "justify-end" : "justify-start"}`}
     >
-      {/* AI Sparkle Icon on Left */}
+      {/* ArguBot Opponent Icon on Left */}
       {!isUser && (
         <div className="w-8 h-8 rounded-full argubot-logo-circle flex items-center justify-center shrink-0 shadow-xs">
-          <Sparkles className="w-4 h-4 text-[#b3b3ff]" />
+          <FcSpeaker className="w-5 h-5" />
         </div>
       )}
 
@@ -79,7 +80,7 @@ export function MessageBubble({ msg, index, isLastMessage, onStreamComplete }) {
               <StreamingText text={msg.text} active={shouldStream} onStreamComplete={onStreamComplete} />
             </div>
             <span className="text-[9px] font-mono tracking-wider text-zinc-400 mt-2 uppercase">
-              ArguBot Counterpoint
+              Component
             </span>
           </div>
         )}
@@ -87,8 +88,12 @@ export function MessageBubble({ msg, index, isLastMessage, onStreamComplete }) {
 
       {/* User Icon on Right */}
       {isUser && (
-        <div className="w-8 h-8 rounded-full argubot-icon-circle flex items-center justify-center shrink-0 shadow-xs">
-          <User className="w-4 h-4" />
+        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white overflow-hidden shrink-0 shadow-xs">
+          {user?.avatar ? (
+            <img src={user.avatar} alt='Profile' className="w-full h-full object-cover" />
+          ) : (
+            user?.name ? user.name.charAt(0).toUpperCase() : 'U'
+          )}
         </div>
       )}
     </motion.div>
@@ -104,7 +109,7 @@ export function ThinkingIndicator() {
       className="flex gap-4 w-full justify-start"
     >
       <div className="w-8 h-8 rounded-full argubot-logo-circle flex items-center justify-center shrink-0 shadow-xs">
-        <Sparkles className="w-4 h-4 text-[#b3b3ff] animate-pulse" />
+        <FcSpeaker className="w-5 h-5 animate-pulse" />
       </div>
       <div className="flex flex-col space-y-2 w-full max-w-[70%]">
         {/* Modern shimmer line placeholder bars representing thinking */}

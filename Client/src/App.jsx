@@ -28,11 +28,11 @@ export default function App() {
     const token = localStorage.getItem('token');
 
     if(token) {
-      fetch('http://localhost:3000/api/auth/me', {
+      fetch('/api/auth/me', {
         method: 'GET',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
         }
       })
       .then(res => res.json())
@@ -119,6 +119,9 @@ export default function App() {
     setActiveChatId(null);
     setInputText("");
     setErrorBanner(null);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // Select a recent chat
@@ -126,6 +129,9 @@ export default function App() {
     setActiveChatId(id);
     setInputText("");
     setErrorBanner(null);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // Delete a chat from recent history
@@ -167,7 +173,10 @@ export default function App() {
     try {
       const response = await fetch("/api/debate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({ opinion: opinionVal, history: [firstMsg] })
       });
 
@@ -216,9 +225,13 @@ export default function App() {
     setIsThinking(true);
 
     try {
+      const token = localStorage.getItem('token');
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const response = await fetch("/api/debate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ opinion: activeChat.opinion, history: updatedHistory })
       });
 
@@ -251,9 +264,13 @@ export default function App() {
     setErrorBanner(null);
 
     try {
+      const token = localStorage.getItem('token');
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const response = await fetch("/api/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ opinion: activeChat.opinion, history: activeChat.history })
       });
 
@@ -436,6 +453,7 @@ export default function App() {
                       className="flex-1 flex flex-col overflow-hidden w-full"
                     >
                       <ChatBot
+                        user={user}
                         activeChat={activeChat}
                         isThinking={isThinking}
                         handleTriggerScoring={handleTriggerScoring}
