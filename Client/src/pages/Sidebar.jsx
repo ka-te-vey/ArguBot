@@ -175,35 +175,48 @@ export default function Sidebar({
           </button>
 
           {/* User Profile Card */}
-          <Link
-            to="/signin"
-            className={`flex items-center justify-between rounded-2xl transition-all cursor-pointer ${
-              isOpen ? "px-3 py-2 hover:bg-red-500/10 hover:text-red-500 group" : "py-2 justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800"
-            }`}
-            title="Sign out"
-          >
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="relative shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
-                  {userInitial}
+          <div className="flex items-center justify-between gap-1">
+            <Link
+              to="/profile"
+              className={`flex-1 flex items-center justify-between rounded-2xl transition-all cursor-pointer ${
+                isOpen ? "px-3 py-2 hover:bg-purple-500/10 group" : "py-2 justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800"
+              }`}
+              title="View and edit profile"
+            >
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="relative shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white overflow-hidden">
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      userInitial
+                    )}
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
                 </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-[#1E1E1F]" />
+                {isOpen && (
+                  <div className="overflow-hidden text-left">
+                    <p className={`text-xs font-semibold truncate ${isDark ? "text-white group-hover:text-purple-300" : "text-zinc-800 group-hover:text-purple-700"}`}>
+                      {userName}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 truncate font-mono">
+                      {userEmail}
+                    </p>
+                  </div>
+                )}
               </div>
-              {isOpen && (
-                <div className="overflow-hidden text-left">
-                  <p className={`text-xs font-semibold truncate ${isDark ? "text-white group-hover:text-red-400" : "text-zinc-800 group-hover:text-red-600"}`}>
-                    {userName}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 truncate font-mono group-hover:text-red-400/80">
-                    {userEmail}
-                  </p>
-                </div>
-              )}
-            </div>
+            </Link>
+
             {isOpen && (
-              <LogOut className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 shrink-0" />
+              <Link
+                to="/signin"
+                className="p-2 rounded-xl text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </Link>
             )}
-          </Link>
+          </div>
         </div>
       </aside>
     </>

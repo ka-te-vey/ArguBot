@@ -4,12 +4,13 @@ import { motion } from "motion/react";
 import { useTheme } from "./Theme";
 
 // Word-by-word streaming text component
-export function StreamingText({ text, active }) {
+export function StreamingText({ text, active, onStreamComplete }) {
   const [displayedText, setDisplayedText] = useState(active ? "" : text);
 
   useEffect(() => {
     if (!active) {
       setDisplayedText(text);
+      if (onStreamComplete) onStreamComplete();
       return;
     }
     setDisplayedText("");
@@ -21,6 +22,7 @@ export function StreamingText({ text, active }) {
         currentIndex++;
       } else {
         clearInterval(interval);
+        if (onStreamComplete) onStreamComplete();
       }
     }, 45); // pacing is smooth and natural
     return () => clearInterval(interval);
@@ -29,7 +31,7 @@ export function StreamingText({ text, active }) {
   return <span className="leading-relaxed whitespace-pre-wrap">{displayedText}</span>;
 }
 
-export function MessageBubble({ msg, index, isLastMessage }) {
+export function MessageBubble({ msg, index, isLastMessage, onStreamComplete }) {
   const isUser = msg.role === "user";
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -74,7 +76,7 @@ export function MessageBubble({ msg, index, isLastMessage }) {
             <div className={`text-[15px] leading-relaxed select-text tracking-wide ${
               isDark ? "text-[#E3E3E3]" : "text-[#1F1F1F]"
             }`}>
-              <StreamingText text={msg.text} active={shouldStream} />
+              <StreamingText text={msg.text} active={shouldStream} onStreamComplete={onStreamComplete} />
             </div>
             <span className="text-[9px] font-mono tracking-wider text-zinc-400 mt-2 uppercase">
               ArguBot Counterpoint

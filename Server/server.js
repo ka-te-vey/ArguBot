@@ -22,16 +22,16 @@ app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 
 
-async function callGroqChatCompletion(message, jsonMode = false) {
-  const apiKey = process.env.GROQ_API_KEY;
+async function callGroqChatCompletion(messages, jsonMode = false) {
+  const apiKey = process.env.GROQ_API_KEY || process.env.API_KEY;
   if (!apiKey) {
-    throw new Error('GROQ_API_KEY environment variable is not configured.')
+    throw new Error('GROQ_API_KEY environment variable is not configured.');
   }
 
   const payload = {
     model: 'llama-3.3-70b-versatile',
     messages: messages,
-  }
+  };
 
   if (jsonMode) {
     payload.response_format = { type: 'json_object' };
@@ -63,19 +63,19 @@ app.post('/api/debate', async (req, res) => {
     const { opinion, history } = req.body;
 
     if (!opinion) {
-      return res.status(400).json({ error: 'Missing original opinion.' })
+      return res.status(400).json({ error: 'Missing original opinion.' });
     }
 
     if (!Array.isArray(history)) {
-      return res.status(400).json({ error: 'Histrory must be an array of message.' })
+      return res.status(400).json({ error: 'History must be an array of messages.' });
     }
 
     const systemPrompt = `You're OPPONENT, a live debate sparring partner.
-    Always argue the OPPOSITE side of whatever the user jsut said no matter what it is.
+    Always argue the OPPOSITE side of whatever the user just said no matter what it is.
     Keep every reply to 2-3 sentences max. 
-    Topix: "${opinion}".`;
+    Topic: "${opinion}".`;
 
-    const message = [
+    const messages = [
       { role: 'system', content: systemPrompt },
       ...history.map((msg) => ({
         role: msg.role === 'user' ? 'user' : 'assistant',
@@ -83,12 +83,12 @@ app.post('/api/debate', async (req, res) => {
       }))
     ];
 
-    const reply = await callGroqChatCompletion(message, false);
+    const reply = await callGroqChatCompletion(messages, false);
     res.json({ reply: reply.trim() });
 
   } catch (error) {
     console.error('Error in /api/debate: ', error);
-    res.status(500).json({ error: error.message || 'An error occured while contacting the debate model.'})
+    res.status(500).json({ error: error.message || 'An error occurred while contacting the debate model.' });
   }
 });
 
@@ -98,44 +98,37 @@ app.post('/api/score', async (req, res) => {
     const { opinion, history } = req.body;
 
     if (!opinion) {
-      return res.status(400).json({ error: 'Missing original opinion.'})
+      return res.status(400).json({ error: 'Missing original opinion.' });
     }
 
     if (!Array.isArray(history)) {
-      return res.status(400).json({ error: 'History must be an array of messages.'})
+      return res.status(400).json({ error: 'History must be an array of messages.' });
     }
 
-    const systemPrompt = `You're are JUDGE, switching from opponent to referee.
+    const systemPrompt = `You are JUDGE, switching from opponent to referee.
     Evaluate only the user's argument in the transcript.
-    Respond with STRICT json only, no markdown fences: { score: number, advice: string, improvement: string }.`;
+    Respond with STRICT json only, no markdown fences: { "score": number, "advice": "string", "improvement": "string" }.`;
 
     const transcript = history
     .map((msg) => `${msg.role === 'user' ? 'user' : 'Opponent'}: ${msg.text}`)
-    .join('\n\n')
+    .join('\n\n');
 
-    const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript:\n${transcript}\n\nPlease evaluate the User's arguement.`;
+    const userMessage = `Opinion to debate: "${opinion}"\n\nDebate Transcript:\n${transcript}\n\nPlease evaluate the User's argument.`;
 
-    const message = [
-      { role: 'System', content: systemPrompt },
-      { role: 'user', content: userMessage}
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage }
     ];
 
-    const gptResponse = await callGroqChatCompletion(message, true);
+    const gptResponse = await callGroqChatCompletion(messages, true);
 
-    let cleanedResponse = gptResponse.trim();
-    if (cleanedResponse.startsWith("``json")) {
-      cleanedResponse = cleanedResponse.substring(7);
-    } else if (cleanedResponse.startsWith("``")) {
-      cleanedResponse = cleanedResponse.substring(0, cleanedResponse.length - 3);
-    }
-    cleanedResponse = cleanedResponse.trim();
-
+    let cleanedResponse = gptResponse.trim().replace(/^```(?:json)?\s*|\s*```$/g, '');
     const scoreJson = JSON.parse(cleanedResponse);
     res.json(scoreJson);
 
   } catch (error) {
     console.error('Error in /api/score: ', error);
-    res.status(500).json({ error: error.message || 'An error occurred while evaluating your debate performance'})
+    res.status(500).json({ error: error.message || 'An error occurred while evaluating your debate performance' });
   }
 });
 

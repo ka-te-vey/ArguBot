@@ -75,6 +75,11 @@ export default function VerifyCode() {
     e.preventDefault();
     const fullCode = code.join("");
 
+    if(!email) {
+      setError('Email is missing. Please request a password reset again!')
+      return;
+    }
+
     if (fullCode.length < 5) {
       setError("Please enter the complete 5-digit verification code.");
       return;
@@ -89,6 +94,11 @@ export default function VerifyCode() {
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     const fullCode = code.join("");
+
+    if(!email) {
+      setError('Email is missing. Please request a password reset again!')
+      return;
+    }
 
     if (!newPassword || !confirmPassword) {
       setError("Please enter your new password.");

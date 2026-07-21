@@ -6,17 +6,25 @@ export function ScoreGauge({ score }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   return (
-    <div className="relative flex flex-col items-center justify-center mb-8 bg-zinc-50 dark:bg-[#131314] h-32 w-32 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-inner">
+    <div className={`relative flex flex-col items-center justify-center mb-8 h-32 w-32 rounded-full border shadow-inner transition-colors ${
+      isDark ? "bg-[#131314] border-zinc-800" : "bg-white border-zinc-200"
+    }`}>
       {/* Signature outer gradient halo */}
       <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse blur-sm" />
-      <span className={`font-mono text-[9px] uppercase tracking-wider relative z-10 ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
+      <span className={`font-mono text-[9px] uppercase tracking-wider relative z-10 font-bold ${
+        isDark ? "text-zinc-500" : "text-black"
+      }`}>
         SCORE
       </span>
       <div className="flex items-baseline gap-0.5 relative z-10">
-        <span className={`text-5xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
+        <span className={`text-5xl font-black tracking-tight ${
+          isDark ? "text-white" : "text-black"
+        }`}>
           {score || 0}
         </span>
-        <span className={`font-mono text-xs ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
+        <span className={`font-mono text-xs font-bold ${
+          isDark ? "text-zinc-500" : "text-black"
+        }`}>
           /10
         </span>
       </div>

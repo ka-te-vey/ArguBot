@@ -52,11 +52,11 @@ export default function ForgotPassword() {
       }
 
       // success -> navigate directly to verify code page
-      navigate('/verify-code');
+      navigate('/verify-code', { state: { email } });
     } catch (error) {
       console.error('Forgot Password error: ', error);
       // Navigate to verify-code for smooth client UI testing
-      navigate('/verify-code');
+      navigate('/verify-code', { state: { email } });
     } finally {
       setIsLoading(false);
     }

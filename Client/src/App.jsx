@@ -11,6 +11,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyCode from "./pages/VerifyCode";
+import Profile from "./pages/Profile";
 import { useTheme } from "./components/Theme";
 
 export default function App() {
@@ -314,6 +315,7 @@ export default function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify-code" element={<VerifyCode />} />
+      <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
       <Route
         path="/*"
         element={
@@ -418,6 +420,7 @@ export default function App() {
                       className="flex-1 flex flex-col justify-between overflow-y-auto w-full"
                     >
                       <Dashboard
+                        user={user}
                         onSelectPrompt={(pText) => setInputText(pText)}
                         rounds={rounds}
                         onSetRounds={setRounds}

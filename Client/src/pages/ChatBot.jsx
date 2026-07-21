@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Trophy, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { MessageBubble, ThinkingIndicator } from "../components/ChatFeed";
@@ -8,11 +8,22 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
   const messagesEndRef = useRef(null);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  // Track streaming state when a new AI message arrives
+  useEffect(() => {
+    const lastMsg = activeChat.history[activeChat.history.length - 1];
+    if (lastMsg && lastMsg.role === "ai" && Date.now() - lastMsg.timestamp < 15000) {
+      setIsStreaming(true);
+    } else {
+      setIsStreaming(false);
+    }
+  }, [activeChat.history.length]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat.history, isThinking]);
+  }, [activeChat.history, isThinking, isStreaming]);
 
   // Determine exchange numbers
   const userMessages = activeChat.history.filter((m) => m.role === "user");
@@ -37,14 +48,15 @@ export default function ChatBot({ activeChat, isThinking, handleTriggerScoring }
                 msg={msg}
                 index={index}
                 isLastMessage={index === activeChat.history.length - 1}
+                onStreamComplete={() => setIsStreaming(false)}
               />
             ))}
 
             {/* AI Thinking / Formulating */}
             {isThinking && <ThinkingIndicator />}
 
-            {/* Debate Completed Transition Card */}
-            {isDebateFullyComplete && !isThinking && (
+            {/* Debate Completed Transition Card (Only when opponent is done thinking AND streaming) */}
+            {isDebateFullyComplete && !isThinking && !isStreaming && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
